@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at <http://www.gnu.org/licenses/>.
@@ -37,7 +37,9 @@ $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_cont
 /**
  * Palettes
  */
+$GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][]		= 'powerslide_orientation';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_setup']		= '{type_legend},type;{powerslide_legend},powerslide_size,powerslide_orientation,powerslide_interval,powerslide_speed,powerslide_transition,powerslide_ease,powerslide_navEvent,powerslide_buttons,powerslide_position;{protected_legend:hide},protected;{expert_legend:hide},guests,start,stop,cssID,space';
+$GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_setupswipejs']		= '{type_legend},type;{powerslide_legend},powerslide_size,powerslide_orientation,powerslide_interval,powerslide_speed,powerslide_navEvent,powerslide_buttons,powerslide_position;{protected_legend:hide},protected;{expert_legend:hide},guests,start,stop,cssID,space';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_preview']		= '{type_legend},type,headline;{text_legend},text;{image_legend},addImage;{link_legend:hide},powerslide_url,powerslide_target;{protected_legend:hide},protected;{expert_legend:hide},guests,start,stop,cssID,space';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_section']		= '{type_legend},type;{image_legend},powerslide_background;{link_legend:hide},powerslide_url,powerslide_target;{protected_legend:hide},protected;{expert_legend:hide},guests,start,stop,cssID,space';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_news']			= '{type_legend},type;{include_legend},powerslide_news;{protected_legend:hide},protected;{expert_legend:hide},guests,start,stop,cssID,space';
@@ -60,9 +62,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['powerslide_orientation'] = array
 	'label'				=> &$GLOBALS['TL_LANG']['tl_content']['powerslide_orientation'],
 	'exclude'			=> true,
 	'inputType'			=> 'select',
-	'options'			=> array('right-to-left', 'bottom-to-top', 'fade', 'randomfade'),
+	'options'			=> array('swipejs', 'right-to-left', 'bottom-to-top', 'fade', 'randomfade'),
 	'reference'			=> &$GLOBALS['TL_LANG']['tl_content']['powerslide_orientation'],
-	'eval'				=> array('mandatory'=>true, 'tl_class'=>'w50'),
+	'eval'				=> array('mandatory'=>true, 'tl_class'=>'w50', 'submitOnChange'=>true),
 );
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['powerslide_transition'] = array
@@ -170,21 +172,21 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['powerslide_news'] = array
 
 class tl_content_powerslide extends Backend
 {
-	
+
 	/**
 	 * Hide the URL element if the preview event is "click"
 	 */
 	public function hidePreviewUrl($dc)
 	{
 		$objSetup = $this->Database->execute("SELECT * FROM tl_content WHERE type='powerslide_setup' AND pid=(SELECT pid FROM tl_content WHERE id={$dc->id})");
-		
+
 		if ($objSetup->numRows && $objSetup->powerslide_navEvent == 'click')
 		{
 			$GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_preview'] = str_replace('{link_legend:hide},powerslide_url,powerslide_target;', '', $GLOBALS['TL_DCA']['tl_content']['palettes']['powerslide_preview']);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Return all news list modules
 	 *
@@ -196,12 +198,12 @@ class tl_content_powerslide extends Backend
 	{
 		$arrModules = array();
 		$objModules = $this->Database->execute("SELECT * FROM tl_module WHERE type='newslist'");
-		
+
 		while( $objModules->next() )
 		{
 			$arrModules[$objModules->id] = $objModules->name;
 		}
-		
+
 		return $arrModules;
 	}
 }
